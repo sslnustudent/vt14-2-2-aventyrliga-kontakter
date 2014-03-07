@@ -23,3 +23,22 @@ tr:nth-child(even)
 {
     background: #EEEEE8;
 }
+ValidationSummary {
+
+    color:red;
+}
+#HyperLink1 {
+
+    float:right;
+    clear:left;
+    clear:right;
+}
+#OkDiv {
+
+    width:400px;
+    height:40px;
+    background-color:limegreen;
+    border-style:solid;
+    border-width:thin;
+    text-align:center;
+}

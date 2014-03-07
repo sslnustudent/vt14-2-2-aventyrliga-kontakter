@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.ComponentModel.DataAnnotations;
 using Lab2_2ÄventyrligaKontakter.Model.DAL;
 
 namespace Lab2_2ÄventyrligaKontakter.Model
@@ -20,10 +21,10 @@ namespace Lab2_2ÄventyrligaKontakter.Model
             return ContactDAL.GetContacts();
         }
 
-        public IEnumerable<Contact> GetContactsPageWise(int maximumRows, int startRowIndex, int totalRowCount)
+        public IEnumerable<Contact> GetContactsPageWise(int maximumRows, int startRowIndex, out int totalRowCount)
         {
-            
-            return ContactDAL.GetContactsPageWise(maximumRows, startRowIndex, totalRowCount);
+
+            return ContactDAL.GetContactsPageWise(maximumRows, startRowIndex, out totalRowCount);
         }
 
 
@@ -39,6 +40,14 @@ namespace Lab2_2ÄventyrligaKontakter.Model
 
         public void SaveContact(Contact contact)
         {
+            var validationContext = new ValidationContext(contact);
+            var validationResults = new List<ValidationResult>();
+            if (!Validator.TryValidateObject(contact, validationContext, validationResults, true))
+            {
+                var ex = new ValidationException("Objektet klarade inte valideringen.");
+                ex.Data.Add("ValidationResults", validationResults);
+                throw ex;
+            }
             if (contact.ContactID == 0)
             {
                 ContactDAL.InsertContact(contact);

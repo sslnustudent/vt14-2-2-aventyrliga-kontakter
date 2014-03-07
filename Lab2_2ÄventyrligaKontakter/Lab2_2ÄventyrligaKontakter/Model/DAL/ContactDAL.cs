@@ -58,7 +58,7 @@ namespace Lab2_2ÄventyrligaKontakter.Model.DAL
             }
         }
 
-        public IEnumerable<Contact> GetContactsPageWise(int pageSize, int pageIndex, int recordCount)
+        public IEnumerable<Contact> GetContactsPageWise(int pageSize, int pageIndex, out int recordCount)
         {
             using (var conn = CreateConnection())
             {
@@ -69,9 +69,10 @@ namespace Lab2_2ÄventyrligaKontakter.Model.DAL
 
                     var cmd = new SqlCommand("Person.uspGetContactsPageWise", conn);
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@PageIndex", pageIndex);
                     cmd.Parameters.AddWithValue("@PageSize", pageSize);
-                    cmd.Parameters.AddWithValue("@RecordCount", recordCount);
+                    cmd.Parameters.AddWithValue("@PageIndex", pageIndex / 10 + 1);
+                    cmd.Parameters.Add("@RecordCount", SqlDbType.Int, 4).Direction = ParameterDirection.Output;
+                    
 
                     conn.Open();
 
@@ -94,7 +95,7 @@ namespace Lab2_2ÄventyrligaKontakter.Model.DAL
                                 });
                         }
                     }
-
+                    recordCount = (int)cmd.Parameters["@RecordCount"].Value;
                     contacts.TrimExcess();
 
                     return contacts;

@@ -19,7 +19,12 @@ namespace Lab2_2ÄventyrligaKontakter
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            
+            if (Session["a"] != null)
+            {
+                LabelOk.Text = Convert.ToString(Session["a"]);
+                OkDiv.Visible = true;
+                Session.Remove("a");
+            }
 
         }
 
@@ -28,20 +33,23 @@ namespace Lab2_2ÄventyrligaKontakter
         //     int maximumRows
         //     int startRowIndex
         //     out int totalRowCount
-        //     string sortByExpression
+        //     string sortByExpression                                                                            startRowIndex
         public IEnumerable<Lab2_2ÄventyrligaKontakter.Model.Contact> ContactListView_GetData(int maximumRows, int startRowIndex, out int totalRowCount)
         {
-            //return Service.GetContacts();
-            //try
-            //{
-            totalRowCount = Service.GetContacts().Count();
-            return Service.GetContactsPageWise(maximumRows, (startRowIndex / 3) + 1, totalRowCount);
-            //}
-            //catch (Exception)
-            //{
-            //    //ModelState.AddModelError(String.Empty, "Ett fell inträffade när kontaktere skulle hämtas.");
-            
-            //}
+            try
+            {
+                return Service.GetContactsPageWise(maximumRows, startRowIndex, out totalRowCount);
+            }
+            catch
+            {
+
+                CustomValidator cv = new CustomValidator();
+                cv.ErrorMessage = "Ett fel inträffade när kontakter skulle hämtas.";
+                cv.IsValid = false;
+                Page.Validators.Add(cv);
+                totalRowCount = 0;
+                return null;
+            }
         }
 
         public void ContactListView_InsertItem(Contact contact)
@@ -51,10 +59,15 @@ namespace Lab2_2ÄventyrligaKontakter
                 try
                 {
                     Service.SaveContact(contact);
+                    Session["a"] = "Kontakten har blivit upplagd!!!";
+                    Response.Redirect("~/Default.aspx");
                 }
                 catch
-                { 
-                    
+                {
+                    CustomValidator cv = new CustomValidator();
+                    cv.ErrorMessage = "Ett fel inträffade när kontakten skulle läggas up";
+                    cv.IsValid = false;
+                    Page.Validators.Add(cv);
                 }
             }
         }
@@ -64,25 +77,34 @@ namespace Lab2_2ÄventyrligaKontakter
             try
             {
                 Service.DeleteContact(ContactID);
+                Session["a"] = "Kontakten har blivit raderad!!!";
+                Response.Redirect("~/Default.aspx");
             }
             catch
             {
- 
+                CustomValidator cv = new CustomValidator();
+                cv.ErrorMessage = "Ett fel inträffade när kontakten skulle raderas";
+                cv.IsValid = false;
+                Page.Validators.Add(cv);
+
             }
         }
 
-        // The id parameter name should match the DataKeyNames value set on the control
         public void ContactListView_UpdateItem(int ContactID)
         {
             var contact = Service.GetContact(ContactID);
             if (contact == null)
             {
-                //ModelState.AddModelError("", String.Format("Item with id {0} was not found", ContactID));
-                return;
+                CustomValidator cv = new CustomValidator();
+                cv.ErrorMessage = "Ett fel inträffade när kontakten skulle uppdateras";
+                cv.IsValid = false;
+                Page.Validators.Add(cv);
             }
             if (TryUpdateModel(contact))
             {
                 Service.SaveContact(contact);
+                Session["a"] = "Kontakten har blivit uppdaterad!!!";
+                Response.Redirect("~/Default.aspx");
             }
         }
     }
