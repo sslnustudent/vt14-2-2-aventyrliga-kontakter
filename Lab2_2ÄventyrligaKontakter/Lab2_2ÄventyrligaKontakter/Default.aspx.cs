@@ -87,6 +87,7 @@ namespace Lab2_2ÄventyrligaKontakter
                 cv.IsValid = false;
                 Page.Validators.Add(cv);
 
+
             }
         }
 
