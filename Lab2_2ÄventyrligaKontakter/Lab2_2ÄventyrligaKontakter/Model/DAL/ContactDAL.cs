@@ -58,6 +58,9 @@ namespace Lab2_2ÄventyrligaKontakter.Model.DAL
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IEnumerable<Contact> GetContactsPageWise(int pageSize, int pageIndex, out int recordCount)
         {
             using (var conn = CreateConnection())
